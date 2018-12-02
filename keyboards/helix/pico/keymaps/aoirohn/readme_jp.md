@@ -1,4 +1,4 @@
-# The Default HelixPico Layout
+# The aoiro's HelixPico Layout
 ## 配列
 
 ### Qwerty配列

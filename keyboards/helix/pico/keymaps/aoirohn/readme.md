@@ -1,4 +1,4 @@
-# The Default HelixPico Layout
+# The aoiro's HelixPico Layout
 ## Layout
 
 ### Qwerty
@@ -67,15 +67,6 @@
 ```
 
 ## Layers
-
-|Priority|number|name|description|
-| ---- | ---- | --- | --- |
-|high|16|Adjust|Functions|
-||4|Raise|Numeric charactors|
-||3|Lower|Other charactors|
-||2|Dvorak|Dvorak leyout|
-||1|Colemak|Colemak leyout|
-|low|0|Qwerty|QWERTY leyout(base)|
 
 ### Lower
 ```

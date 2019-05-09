@@ -40,7 +40,8 @@ enum custom_keycodes {
   SSSPC, // Shift when hold, Shift + Space when tapped.
   LWRTB, // Lower when hold, Tab when tapped.
   LWGTB, // Lower when hold, GUI+Tab when tapped.
-  RASEN, // Raise when hold, ENTER when tapped.
+  RSBSP, // Raise when hold, BS when tapped.
+  RSDEL, // Raise when hold, BS when tapped.
 
   BACKLIT,
   RGBRST,
@@ -76,7 +77,8 @@ enum custom_keycodes {
 #define KC_SSSPC SSSPC
 #define KC_LWRTB LWRTB
 #define KC_LWGTB LWGTB
-#define KC_RASEN RASEN
+#define KC_RSBSP RSBSP
+#define KC_RSDEL RSDEL
 
 #define KC_RST   RESET
 #define KC_LRST  RGBRST
@@ -91,7 +93,8 @@ enum custom_keycodes {
 
 #define KC_CTLEC CTL_T(KC_ESC)
 
-#define KC_EIKN  LALT(KC_GRV)
+#define KC_EIKN   LALT(KC_GRV)
+#define KC_ALENT  LALT(KC_ENT)
 
 #define KC_F1x F1x
 #define KC_F2x F2x
@@ -113,7 +116,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT,     Z,     X,     C,     V,     B,                      N,     M,  COMM,   DOT,  SLSH,  RSFT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  GUIEI, LWRTB, SFTSP,     BSPC, RASEN, ALTKN \
+                                  GUIEI, LWRTB, SFTSP,     ENT, RSBSP, ALTKN \
                               //`--------------------'  `--------------------'
   ),
 
@@ -125,7 +128,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT,     Z,     X,     C,     V,     F,                      M,     L,     B,  SCLN,  SLSH,  RSFT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  GUIEI, LWRTB, SFTSP,     BSPC, RASEN, ALTKN \
+                                  GUIEI, LWRTB, SFTSP,     ENT, RSBSP, ALTKN \
                               //`--------------------'  `--------------------'
   ),
 
@@ -137,7 +140,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT,   F6x,   F7x,   F8x,   F9x,  F10x,                    TAB,     1,     2,     3,  PPLS,  PENT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  _____, _____, _____,      DEL,RAISE, LALT \
+                                  _____, _____, _____,    ALENT, RSDEL, LALT \
                               //`--------------------'  `--------------------'
   ),
 
@@ -442,7 +445,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case RASEN:
+    case RSBSP:
       if (record->event.pressed) {
         reset_hold();
         raise_pressed = true;
@@ -455,8 +458,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (raise_pressed && (TIMER_DIFF_16(record->event.time, raise_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_ENT);
-          unregister_code(KC_ENT);
+          register_code(KC_BSPC);
+          unregister_code(KC_BSPC);
+        }
+        raise_pressed = false;
+      }
+      return false;
+      break;
+    case RSDEL:
+      if (record->event.pressed) {
+        reset_hold();
+        raise_pressed = true;
+        raise_pressed_time = record->event.time;
+
+        layer_on(_RAISE);
+        update_tri_layer(_LOWER, _RAISE, _ADJUST);
+      } else {
+        layer_off(_RAISE);
+        update_tri_layer(_LOWER, _RAISE, _ADJUST);
+
+        if (raise_pressed && (TIMER_DIFF_16(record->event.time, raise_pressed_time) < TAPPING_TERM)) {
+          register_code(KC_DEL);
+          unregister_code(KC_DEL);
         }
         raise_pressed = false;
       }

@@ -36,12 +36,12 @@ enum custom_keycodes {
 
   GUIEI, // GUI when hold, EISU/MHEN when tapped.
   ALTKN, // ALT when hold, KANA/HENK when tapped.
-  SFTSP, // Shift when hold, Space when tapped.
-  SSSPC, // Shift when hold, Shift + Space when tapped.
-  LWRTB, // Lower when hold, Tab when tapped.
-  LWGTB, // Lower when hold, GUI+Tab when tapped.
-  RSBSP, // Raise when hold, BS when tapped.
-  RSDEL, // Raise when hold, BS when tapped.
+  LWSP, // Lower when hold, Space when tapped.
+  LWSSP, // Lower when hold, Shift+Space when tapped.
+  STAB, // Shift when hold, TAB when tapped.
+  SGTAB, // Shift when hold, GUI+TAB when tapped.
+  RSEN, // Raise when hold, ENTER when tapped.
+  RSAEN, // Raise when hold, ALT+ENTER when tapped.
 
   BACKLIT,
   RGBRST,
@@ -60,10 +60,6 @@ enum custom_keycodes {
 
 #define MODS_SHIFT_MASK  (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))
 
-// enum macro_keycodes {
-//   KC_SAMPLEMACRO,
-// };
-
 #define KC______ KC_TRNS
 #define KC_XXXXX KC_NO
 #define KC_QWERTY QWERTY
@@ -73,12 +69,12 @@ enum custom_keycodes {
 
 #define KC_GUIEI GUIEI
 #define KC_ALTKN ALTKN
-#define KC_SFTSP SFTSP
-#define KC_SSSPC SSSPC
-#define KC_LWRTB LWRTB
-#define KC_LWGTB LWGTB
-#define KC_RSBSP RSBSP
-#define KC_RSDEL RSDEL
+#define KC_LWSP  LWSP
+#define KC_LWSSP LWSSP
+#define KC_STAB  STAB
+#define KC_SGTAB SGTAB
+#define KC_RSEN  RSEN
+#define KC_RSAEN RSAEN
 
 #define KC_RST   RESET
 #define KC_LRST  RGBRST
@@ -116,7 +112,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT,     Z,     X,     C,     V,     B,                      N,     M,  COMM,   DOT,  SLSH,  RSFT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  GUIEI, LWRTB, SFTSP,     ENT, RSBSP, ALTKN \
+                                  GUIEI,  LWSP,  STAB,     BSPC,  RSEN, ALTKN \
                               //`--------------------'  `--------------------'
   ),
 
@@ -128,7 +124,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT,     Z,     X,     C,     V,     F,                      M,     L,     B,  SCLN,  SLSH,  RSFT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  GUIEI, LWRTB, SFTSP,     ENT, RSBSP, ALTKN \
+                                  GUIEI,  LWSP,  STAB,     BSPC,  RSEN, ALTKN \
                               //`--------------------'  `--------------------'
   ),
 
@@ -140,7 +136,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT,   F6x,   F7x,   F8x,   F9x,  F10x,                    TAB,     1,     2,     3,  PPLS,  PENT,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                  _____, _____, _____,    ALENT, RSDEL, LALT \
+                                  _____, _____, _____,     DEL,  RSAEN, LALT \
                               //`--------------------'  `--------------------'
   ),
 
@@ -152,7 +148,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|------+------+------+------+------+------|                |------+------+------+------+------+------|
        LSFT, XXXXX, XXXXX, XXXXX,  PIPE,  BSLS,                   UNDS,   EQL,  PLUS,  MINS, XXXXX, PAUSE,\
   //|------+------+------+------+------+------+------|  |------+------+------+------+------+------+------|
-                                   LGUI,LWGTB,  SSSPC,    _____, _____, _____ \
+                                   LGUI, LWSSP, SGTAB,    _____, _____, _____ \
                               //`--------------------'  `--------------------'
   ),
 
@@ -364,46 +360,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case SFTSP:
-      if (record->event.pressed) {
-        reset_hold();
-        shift_pressed = true;
-        shift_pressed_time = record->event.time;
-
-        register_code(KC_LSFT);
-      } else {
-        unregister_code(KC_LSFT);
-
-        if (shift_pressed && (TIMER_DIFF_16(record->event.time, shift_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_SPC);
-          unregister_code(KC_SPC);
-        }
-        shift_pressed = false;
-      }
-      return false;
-      break;
-
-    case SSSPC:
-      if (record->event.pressed) {
-        reset_hold();
-        shift_pressed = true;
-        shift_pressed_time = record->event.time;
-
-        register_code(KC_LSFT);
-      } else {
-
-        if (shift_pressed && (TIMER_DIFF_16(record->event.time, shift_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_SPC);
-          unregister_code(KC_SPC);
-        }
-        unregister_code(KC_LSFT);
-
-        shift_pressed = false;
-      }
-      return false;
-      break;
-
-    case LWRTB:
+    case LWSP:
+    case LWSSP:
       if (record->event.pressed) {
         reset_hold();
         lower_pressed = true;
@@ -416,36 +374,48 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (lower_pressed && (TIMER_DIFF_16(record->event.time, lower_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_TAB);
-          unregister_code(KC_TAB);
+          if (keycode == LWSP) {
+            register_code(KC_SPC);
+            unregister_code(KC_SPC);
+          } else {
+            register_code(KC_LSFT);
+            register_code(KC_SPC);
+            unregister_code(KC_SPC);
+            unregister_code(KC_LSFT);
+          }
         }
         lower_pressed = false;
       }
       return false;
       break;
-    case LWGTB:
+    case STAB:
+    case SGTAB:
       if (record->event.pressed) {
         reset_hold();
-        lower_pressed = true;
-        lower_pressed_time = record->event.time;
+        shift_pressed = true;
+        shift_pressed_time = record->event.time;
 
-        layer_on(_LOWER);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
+        register_code(KC_LSFT);
       } else {
-        layer_off(_LOWER);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
+        unregister_code(KC_LSFT);
 
-        if (lower_pressed && (TIMER_DIFF_16(record->event.time, lower_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_LGUI);
-          register_code(KC_TAB);
-          unregister_code(KC_TAB);
-          unregister_code(KC_LGUI);
+        if (shift_pressed && (TIMER_DIFF_16(record->event.time, shift_pressed_time) < TAPPING_TERM)) {
+          if (keycode == STAB) {
+            register_code(KC_TAB);
+            unregister_code(KC_TAB);
+          } else {
+            register_code(KC_LGUI);
+            register_code(KC_TAB);
+            unregister_code(KC_TAB);
+            unregister_code(KC_LGUI);
+          }
         }
-        lower_pressed = false;
+        shift_pressed = false;
       }
       return false;
       break;
-    case RSBSP:
+    case RSEN:
+    case RSAEN:
       if (record->event.pressed) {
         reset_hold();
         raise_pressed = true;
@@ -458,28 +428,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         update_tri_layer(_LOWER, _RAISE, _ADJUST);
 
         if (raise_pressed && (TIMER_DIFF_16(record->event.time, raise_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_BSPC);
-          unregister_code(KC_BSPC);
-        }
-        raise_pressed = false;
-      }
-      return false;
-      break;
-    case RSDEL:
-      if (record->event.pressed) {
-        reset_hold();
-        raise_pressed = true;
-        raise_pressed_time = record->event.time;
-
-        layer_on(_RAISE);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
-      } else {
-        layer_off(_RAISE);
-        update_tri_layer(_LOWER, _RAISE, _ADJUST);
-
-        if (raise_pressed && (TIMER_DIFF_16(record->event.time, raise_pressed_time) < TAPPING_TERM)) {
-          register_code(KC_DEL);
-          unregister_code(KC_DEL);
+          if (keycode == RSEN) {
+            register_code(KC_ENT);
+            unregister_code(KC_ENT);
+          } else {
+          register_code(KC_LALT);
+          register_code(KC_ENT);
+          unregister_code(KC_ENT);
+          unregister_code(KC_LALT);
+          }
         }
         raise_pressed = false;
       }
